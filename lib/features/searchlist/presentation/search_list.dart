@@ -14,83 +14,91 @@ class ListProducts extends StatefulWidget {
 class _ListProductsState extends State<ListProducts> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Search List'),
-        backgroundColor: const Color(0xFF121167),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          children: [
-            const SizedBox(
-              height: 20.0,
-            ),
-            DebounceBuilder(
-                delay: const Duration(milliseconds: 700),
-                builder: (_, debounce) {
-                  return TextField(
-                    decoration: const InputDecoration(
-                      hintText: 'Search Product, Example: TV',
-                      prefixIcon: Icon(
-                        Icons.search,
-                        color: Color(0xFF121167),
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Search List'),
+          leading: Container(),
+          backgroundColor: const Color(0xFF121167),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 20.0,
+              ),
+              DebounceBuilder(
+                  delay: const Duration(milliseconds: 700),
+                  builder: (_, debounce) {
+                    return TextField(
+                      decoration: const InputDecoration(
+                        hintText: 'Search Product, Example: TV',
+                        prefixIcon: Icon(
+                          Icons.search,
+                          color: Color(0xFF121167),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(25.0)),
+                            borderSide: BorderSide(color: Color(0xFF121167))),
+                        border: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(25.0)),
+                            borderSide: BorderSide(color: Color(0xFF121167))),
                       ),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(25.0)),
-                          borderSide: BorderSide(color: Color(0xFF121167))),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(25.0)),
-                          borderSide: BorderSide(color: Color(0xFF121167))),
-                    ),
-                    onSubmitted: (String query) {
-                      context
-                          .read<SearchlistBloc>()
-                          .add(SearchListEvent(query));
-                    },
-                    onChanged: (String query) {
-                      debounce(() {
+                      onSubmitted: (String query) {
                         context
                             .read<SearchlistBloc>()
                             .add(SearchListEvent(query));
-                      });
-                    },
-                  );
-                }),
-            const SizedBox(
-              height: 20.0,
-            ),
-            BlocConsumer<SearchlistBloc, SearchlistState>(
-              listener: (context, state) {
-                if (state is ErrorOnRequest) {
-                  String error = state.errorType == ErrorType.noInternet
-                      ? 'No  connection to internet'
-                      : 'Unknown Error';
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(error),
-                    ),
-                  );
-                }
-              },
-              listenWhen: (previous, current) => current is ErrorOnRequest,
-              buildWhen: (previus, current) =>
-                  current is SuccessRequest ||
-                  current is SearchlistInitial ||
-                  current is LoadingRequest,
-              builder: (context, state) {
-                if (state is SuccessRequest) {
-                  return ListProduct(products: state.products);
-                }
+                      },
+                      onChanged: (String query) {
+                        debounce(() {
+                          context
+                              .read<SearchlistBloc>()
+                              .add(SearchListEvent(query));
+                        });
+                      },
+                    );
+                  }),
+              const SizedBox(
+                height: 20.0,
+              ),
+              BlocConsumer<SearchlistBloc, SearchlistState>(
+                listener: (context, state) {
+                  if (state is ErrorOnRequest) {
+                    String error = state.errorType == ErrorType.noInternet
+                        ? 'No  connection to internet'
+                        : 'Unknown Error';
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(error),
+                      ),
+                    );
+                  }
+                },
+                listenWhen: (previous, current) => current is ErrorOnRequest,
+                buildWhen: (previus, current) =>
+                    current is SuccessRequest ||
+                    current is SearchlistInitial ||
+                    current is LoadingRequest,
+                builder: (context, state) {
+                  if (state is SuccessRequest) {
+                    return ListProduct(products: state.products);
+                  }
 
-                if (state is LoadingRequest) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+                  if (state is LoadingRequest) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-                return const ListProduct(products: []);
-              },
-            )
-          ],
+                  return const ListProduct(products: []);
+                },
+              )
+            ],
+          ),
         ),
       ),
     );

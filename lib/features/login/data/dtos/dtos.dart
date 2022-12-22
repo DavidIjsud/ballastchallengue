@@ -1,0 +1,1 @@
+//TODO:  about dtos(models) that represent json from apis.

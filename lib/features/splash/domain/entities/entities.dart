@@ -1,0 +1,1 @@
+//TODO:  entities with properties that are just necesary for the app.
