@@ -16,5 +16,6 @@ Features of the app:
 To take in mind:
 
     - App done with Flutter 3.3.8
-    - The URLs used are wrote in the gorilla field answer.
+    - The URLs (apis) used are wrote in the gorilla field answer.
     - Five products visited is just a list in the use case  products visited
+    - dev.env  , stag.env , prod.env  -> files not tracked.
